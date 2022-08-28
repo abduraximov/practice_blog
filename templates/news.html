@@ -1,0 +1,42 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<div class="container mb-50">
+    <div class="row"> 
+        <div class="col-md-9"> 
+            <h2> Yangiliklar </h2>
+            <div class="row">
+                {% if news_count == 0 %}
+                <p align="center"> Hech nima topilmadi </p>
+                {% elif news_count == None %}
+                <p></p>                 
+                {% else %}
+                <p align="center" > {{ news_count }} yangilik topildi </p> 
+                {% endif %}
+                {% for new in news %}
+                <div class="col-md-4" style="margin-bottom: 5%;">
+                    <div class="news">
+                    <div class="news__img p-relative">
+                        <a href="{% url 'news_detail' new.id %}">
+                        <img class="img__1" src="{{ new.images.url }}" alt="none">
+                        </a>
+                    </div>
+                    <div class="news-meta"> 
+                        <span> {{ new.created_at|date:"H:i / d-m-Y" }} </span>
+                    </div>
+                    <a class="news__title" href="{% url 'news_detail' new.id %}">
+                        {{ new.title }}
+                    </a>
+                </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+            <div class="col-md-3">
+            {% include 'recent_news.html' %}
+            </div>
+        </div>
+    </div>
+    
+</div>
+{% endblock content %}

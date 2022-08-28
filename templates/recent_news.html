@@ -1,0 +1,13 @@
+{% comment %} resent news {% endcomment %}
+
+    <div class="block-title"> 
+        <span> So`ngi yangiliklar </span>
+    </div>
+    {% for recent in recent_news %}
+    <div class="mb-25"> 
+        <a class="news-lenta" href="{% url 'news_detail' recent.id %}">
+            <div class="news-meta"> <span> {{ recent.created_at|date:"H:i / d-m-Y" }} </span> </div>
+            <div class="news-lenta__title"> {{ recent.title }} </div> 
+        </a>
+    </div>
+    {% endfor %}
