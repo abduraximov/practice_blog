@@ -41,7 +41,7 @@ body {
 .news-meta {
     margin-bottom: 10px;
     opacity: 0.8;
-    color: #000000;
+    color: #ffffff;
     font-size: 12px;
     background: url(../img/calendar.svg) no-repeat center left;
     background-size: contain;
@@ -49,11 +49,11 @@ body {
 .news__title {
     font-size: 20px;
     line-height: 26px;
-    color: #000;
+    color: rgb(255, 255, 255);
     font-weight: 700;
 }
 .news__title {
-    color: rgba(0, 0, 0, 0.8);
+    color: rgba(255, 255, 255, 0.8);
     font-size: 16px;
     font-weight: bold;
     line-height: 22px;
@@ -103,7 +103,7 @@ a {
     -ms-flex-align: center;
     align-items: center;
     font-size: 12px;
-    color: #000000;
+    color: #ffffff;
     line-height: 15px;
     margin-bottom: 10px;
 }
