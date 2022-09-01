@@ -1,45 +1,74 @@
-<div class="">
-  <div class="">
-    <div class="">
-      {% for comment in comments %}
-      <!-- {% if not comment %} -->
-        <h6 class="fw-bold text-primary mb-1">Izohlar yo`q!</h6>
-      <!-- {% else %} -->
-        <div>
-          <h6 class="fw-bold text-primary mb-1">{{ comment.user }}</h6>
-          <p class="text-muted small mb-0">{{ comment.created_at|timesince }}</p>
-          <p class="mt-3 mb-4 pb-2">{{ comment.body }}</p>
-        </div>
-      
-      <!-- {% endif %} -->
-      {% endfor %}
-    </div>
     {% if request.user.is_authenticated %}
     <form style="width: 100%" method="POST" action="">
       {% csrf_token %}
       <div class="card-footer py-3 border-0">
         <div class="d-flex flex-start w-100">
           <div class="form-outline w-100">
-            <textarea
-              name="body"
-              class="form-control"
-              id="textAreaExample"
-              rows="4"
-              style="background: #fff"
-            ></textarea>
-            <label class="form-label" for="textAreaExample">Message</label>
+            <input type="text" name="body" class="form-control text-white" id="textAreaExample" rows="4"
+              style="background: rgb(87, 84, 84);"></>
+            <label class="form-label mt-3" for="textAreaExample">Message</label>
+            <div class="float-end mt-3">
+              <button type="submit" class="btn btn-primary">
+                Post comment
+              </button>
+            </div>
           </div>
         </div>
-        <div class="float-end mt-2 pt-1">
-          <button type="submit" class="btn btn-primary btn-sm">
-            Post comment
-          </button>
-        </div>
+
       </div>
     </form>
     {% else %}
       <hr>
       <p  > Yozish uchun <a href="{% url 'loginuser' %}?next={{ request.path }}"> Login </a> qilish kerak </p>
-    {% endif %} 
-  </div>
-</div>
+    {% endif %}
+    <div class="">
+      {% for comment in comments %}
+        {% if not comment.parent %}
+        <div>
+          <div class="row">
+            <div class="col-sm-2 mt-2">
+          <h6 class="fw-bold text-primary mb-1">@{{ comment.user }}</h6>
+        </div>
+        <div class="col-sm-6 text-left" >
+          <p class="text-muted small mb-0">{{ comment.created_at|timesince }} ago</p>
+        </div>
+        </div>
+          <p class="">{{ comment.body }}</p>
+          <p>
+            <a class="btn btn-light" data-toggle="collapse" href="#{{comment.id}}" role="button" aria-expanded="false" aria-controls="collapseExample">
+              Replies comment
+            </a>
+          </p>
+          <div class="collapse" id="{{comment.id}}">
+            <div class="card card-body" style="background-color: #0a0a0e;" >
+          {% for reply in comment.all_replies.all %}
+            <div class="row" >
+              <div class="col-sm-2 mt-2">
+              <h6 class="fw-bold text-primary mb-1"> -- {{ reply.user }}</h6>
+              </div>
+              <div class="col-sm-6 text-left" >
+              <p class="text-muted small mb-0">{{ reply.created_at|timesince }} ago</p>
+            </div>
+          </div> 
+          <p class="mb-0" >{{ reply.body }}</p>
+          <hr>
+          {% endfor %}
+          {% if request.user.is_authenticated %}
+          <form method="POST">{% csrf_token %}
+            <input type="text" name="body" class="form-control text-white" id="textAreaExample" rows="4"
+              style="background: rgb(87, 84, 84);">
+            <input type="hidden" name="reply" value="{{ comment.id }}">
+            <button class="btn btn-success float-end mt-2" type="submit">Reply</button>
+          </form>
+          {% else %}
+          <hr>
+          <p> Yozish uchun <a href="{% url 'loginuser' %}?next={{ request.path }}"> Login </a> qilish kerak </p>
+          {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+

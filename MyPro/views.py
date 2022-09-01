@@ -3,6 +3,7 @@ from Config import settings
 from django.http import HttpResponseRedirect
 from multiprocessing import context
 from django.contrib import messages
+from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
@@ -77,6 +78,9 @@ def logoutuser(request):
 def news(request):
     news = News.objects.all()
     recent_news = News.objects.all().order_by('-created_at')
+    paginator = Paginator(news, 9)
+    page_number = request.GET.get('page')
+
     q = request.GET.get('search')
     if request.GET.get('search') is not None:
         news = News.objects.filter(
@@ -84,14 +88,16 @@ def news(request):
             Q(subtitle__icontains = q)|
             Q(body__icontains = q)
         )
+        paginator = Paginator(news, 6)
+        page_obj = paginator.get_page(page_number)
         news_count = news.count()
     else:
-        news = News.objects.all()
+        page_obj = paginator.get_page(page_number)
         news_count = None
 
-
     context ={
-    'news': news, 
+    # 'news': news
+    'page_obj': page_obj, 
     'recent_news': recent_news,
     'news_count': news_count
     }
@@ -100,15 +106,31 @@ def news(request):
 def news_detail(request, pk):
     details = News.objects.get(id=pk)
     recent_news = News.objects.all().order_by('-created_at')
-    comments = details.comments_set.all().order_by('-created_at')
+    comments = Comments.objects.filter(news=details).order_by('-created_at')
+    # parent = Comments.objects.filter(parent__isnull=False)
+    print(type(pk))
 
     if request.method == "POST":
-        Comments.objects.create(
-            user = request.user,
-            news = details,
-            body = request.POST.get('body')
-        )
-        return redirect('news_detail', pk = details.id)
+        if request.POST.get('reply') is not None:
+            reply_id = str(request.POST.get('reply'))
+            print(type(reply_id))
+            reply = comments.get(id=reply_id)
+            com = Comments.objects.create(
+                user = request.user,
+                news = details,
+                body = request.POST.get('body'),
+                parent = reply
+            )
+            com.save()
+            print(reply)
+            return redirect('news_detail', pk = details.id)
+        else:
+            Comments.objects.create(
+                user = request.user,
+                news = details,
+                body = request.POST.get('body')
+            )
+            return redirect('news_detail', pk = details.id)
 
     context = {
         'details': details,
